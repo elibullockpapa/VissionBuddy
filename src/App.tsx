@@ -6,15 +6,16 @@ import Camera from './Camera';
 import QuestionInput from './QuestionInput';
 import Response from './Response';
 
-
 const App: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
   const [prompt, setPrompt] = useState<string>("");
-  const [response, setResponse] = useState<string[] | null>(null);
+  const [response, setResponse] = useState<string[]>([""]);
   const [cameraPaused, setCameraPaused] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleQuestion = async () => {
     setCameraPaused(true);
+    setIsLoading(true);
     const data = {
       instances: [
         {
@@ -43,10 +44,15 @@ const App: React.FC = () => {
     } catch (error) {
       console.error("There was an error with the request", error);
     }
+    finally {
+      setIsLoading(false); // Reset loading state when request ends
+    }
+
   };
 
   const handleDescription = async () => {
     setCameraPaused(true);
+    setIsLoading(true);
     const data = {
       instances: [
         {
@@ -74,6 +80,10 @@ const App: React.FC = () => {
     } catch (error) {
       console.error("There was an error with the request", error);
     }
+    finally {
+      setIsLoading(false); // Reset loading state when request ends
+    }
+
   };
 
   const handleCameraResume = () => {
@@ -91,7 +101,7 @@ const App: React.FC = () => {
       <QuestionInput onTextChange={(q: string) => setPrompt(q)} />
       <button onClick={handleDescription}>Describe Scene</button>
       <button onClick={handleQuestion}>Answer Question</button>
-      {response && <Response responses={response} />}
+      <Response responses={response} isLoading={isLoading} />
     </div>
   );
 }

@@ -20,4 +20,3 @@ const QuestionInput: React.FC<{ onTextChange: (question: string) => void }> = ({
 }
 
 export default QuestionInput;
-
