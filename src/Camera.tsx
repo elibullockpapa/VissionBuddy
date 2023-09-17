@@ -151,8 +151,6 @@ const Camera: React.FC<CameraProps> = ({ onCapture, externallyPaused, onResume }
             )}
         </Box>
     );
-
-
 }
 
 const styles = {
@@ -175,5 +173,3 @@ const styles = {
 };
 
 export default Camera;
-
-

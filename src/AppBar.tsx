@@ -5,9 +5,9 @@ import Typography from '@mui/material/Typography';
 const AppBarComponent: React.FC = () => {
     return (
         <AppBar position="static">
-            <Toolbar>
+            <Toolbar style={{ display: 'flex', justifyContent: 'center' }}>
                 <Typography variant="h6">
-                    Help Me See
+                    VisionBuddy.ai
                 </Typography>
             </Toolbar>
         </AppBar>
