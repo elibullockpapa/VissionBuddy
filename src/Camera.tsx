@@ -1,11 +1,7 @@
 import Webcam from "react-webcam";
 import React, { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
 import Card from "@mui/material/Card";
 import { Box, CardContent } from "@mui/material";
-import StopIcon from '@mui/icons-material/Stop';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-
 
 type CameraProps = {
     onCapture: (imageSrc: string) => void;
@@ -13,11 +9,12 @@ type CameraProps = {
     onResume?: () => void;
 };
 
-
 const Camera: React.FC<CameraProps> = ({ onCapture, externallyPaused, onResume }) => {
     const webcamRef = React.useRef<Webcam>(null);
     const [isPaused, setIsPaused] = useState(false);
     const [capturedImage, setCapturedImage] = useState<string | null>(null);
+    const [pressStartTime, setPressStartTime] = useState<number | null>(null);
+    const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
 
     useEffect(() => {
         if (externallyPaused && !isPaused) {
@@ -32,6 +29,7 @@ const Camera: React.FC<CameraProps> = ({ onCapture, externallyPaused, onResume }
                 onCapture(imageSrc);
                 setCapturedImage(imageSrc);
                 setIsPaused(true);
+                speak("camera paused");
             } else {
                 console.error("Failed to capture image");
             }
@@ -41,13 +39,57 @@ const Camera: React.FC<CameraProps> = ({ onCapture, externallyPaused, onResume }
             if (onResume) {
                 onResume();
             }
+            speak("camera active");
         }
+    };
+
+    const handleMouseDown = () => {
+        setPressStartTime(Date.now()); // Set the start time on mouse down
+    };
+
+    const handleMouseUp = async () => {
+        const pressDuration = Date.now() - (pressStartTime || 0);
+        if (pressDuration < 500) {
+            handleCapture();
+        } else {
+            await switchCamera();
+        }
+        setPressStartTime(null);
+    };
+
+    const switchCamera = async () => {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoInputDevices = devices.filter(device => device.kind === "videoinput");
+
+        // If only one video input device is available, then there's no back camera.
+        if (videoInputDevices.length <= 1) {
+            speak("No back camera available");
+            return;
+        }
+
+        setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
+        const message = facingMode === 'user' ? "camera back" : "camera front";
+        speak(message);
+    };
+
+    const speak = (message: string) => {
+        const utterance = new SpeechSynthesisUtterance(message);
+        speechSynthesis.speak(utterance);
     };
 
     return (
         <Card variant="outlined" sx={styles.card}>
             <CardContent sx={styles.content}>
-                <Box display="flex" alignItems="center" justifyContent="center" height="100%">
+                <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    height="100%"
+                    onMouseDown={handleMouseDown}
+                    onMouseUp={handleMouseUp}
+                    onTouchStart={handleMouseDown} // For mobile touch
+                    onTouchEnd={handleMouseUp}     // For mobile touch
+                >
                     {isPaused && capturedImage ? (
                         <img src={capturedImage} alt="Captured" style={styles.webcam} />
                     ) : (
@@ -55,16 +97,6 @@ const Camera: React.FC<CameraProps> = ({ onCapture, externallyPaused, onResume }
                     )}
                 </Box>
             </CardContent>
-            <Box display="flex" justifyContent="center" p={2}>
-                <Button
-                    onClick={handleCapture}
-                    variant="contained"
-                    startIcon={isPaused ? <PlayArrowIcon /> : <StopIcon />}
-                    sx={isPaused ? styles.resumeButton : styles.pauseButton}
-                >
-                    {isPaused ? 'Resume' : 'Pause'}
-                </Button>
-            </Box>
         </Card>
     );
 }
@@ -72,7 +104,8 @@ const Camera: React.FC<CameraProps> = ({ onCapture, externallyPaused, onResume }
 const styles = {
     card: {
         maxWidth: '900px',
-        margin: '10px'
+        margin: '10px',
+        cursor: 'pointer' // to indicate clickable area
     },
     content: {
         display: 'flex',
@@ -80,27 +113,9 @@ const styles = {
         justifyContent: 'center'
     },
     webcam: {
-        width: '100%',
+        //width: '100%',
         borderRadius: '8px',
         border: '2px solid #333',
-    },
-    pauseButton: {
-        backgroundColor: '#f44336',
-        width: '100%',
-        padding: '10px',
-        color: 'white',
-        '&:hover': {
-            backgroundColor: '#d32f2f'
-        }
-    },
-    resumeButton: {
-        width: '100%',
-        padding: '10px',
-        backgroundColor: '#4caf50',
-        color: 'white',
-        '&:hover': {
-            backgroundColor: '#388e3c'
-        }
     }
 };
 
