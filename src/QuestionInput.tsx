@@ -9,13 +9,12 @@ const QuestionInput: React.FC<{ onTextChange: (question: string) => void }> = ({
     }, [question, onTextChange]);
 
     return (
-        <div>
-            <TextField
-                label="Question"
-                value={question}
-                onChange={e => setQuestion(e.target.value)}
-            />
-        </div>
+        <TextField
+            fullWidth={true}
+            label="Question"
+            value={question}
+            onChange={e => setQuestion(e.target.value)}
+        />
     );
 }
 

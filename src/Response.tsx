@@ -1,4 +1,7 @@
+import React from 'react';
 import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
 type ResponseProps = {
     responses: string[];
@@ -6,29 +9,24 @@ type ResponseProps = {
 };
 
 const Response: React.FC<ResponseProps> = ({ responses, isLoading }) => {
-
-    const renderLoadingIndicator = () => (
-        <div style={loadingIndicatorStyle}>
-            <CircularProgress />
-        </div>
-    );
-
-    const renderResponses = () => responses.map((item: string, index: number) => (
-        <p key={index}>{item}</p>
-    ));
-
     return (
-        <div>
-            <h2>Response:</h2>
-            {isLoading ? renderLoadingIndicator() : renderResponses()}
-        </div>
+        <Box>
+            <Typography variant="h5" gutterBottom>
+                Response:
+            </Typography>
+            {isLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                    <CircularProgress />
+                </Box>
+            ) : (
+                responses.map((item: string, index: number) => (
+                    <Typography key={index} paragraph>
+                        {item}
+                    </Typography>
+                ))
+            )}
+        </Box>
     );
 }
-
-const loadingIndicatorStyle = {
-    display: 'flex',
-    justifyContent: 'center',
-    padding: '20px'
-};
 
 export default Response;

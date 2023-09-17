@@ -5,6 +5,8 @@ import AppBarComponent from './AppBar';
 import Camera from './Camera';
 import QuestionInput from './QuestionInput';
 import Response from './Response';
+import Card from '@mui/material/Card';
+import { Box, Button } from '@mui/material';
 
 const App: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -26,7 +28,7 @@ const App: React.FC = () => {
         }
       ],
       parameters: {
-        sampleCount: 1
+        sampleCount: 3
       }
     };
     try {
@@ -42,6 +44,7 @@ const App: React.FC = () => {
       );
       setResponse(result.data.predictions);
     } catch (error) {
+      setResponse(["an error occurred"]);
       console.error("There was an error with the request", error);
     }
     finally {
@@ -78,6 +81,7 @@ const App: React.FC = () => {
       );
       setResponse(result.data.predictions);
     } catch (error) {
+      setResponse(["an error occurred"]);
       console.error("There was an error with the request", error);
     }
     finally {
@@ -93,17 +97,68 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <AppBarComponent />
-      <Camera
-        onCapture={(imageSrc: string) => setImage(imageSrc.split(",")[1])}
-        externallyPaused={cameraPaused}
-        onResume={handleCameraResume}
-      />
-      <QuestionInput onTextChange={(q: string) => setPrompt(q)} />
-      <button onClick={handleDescription}>Describe Scene</button>
-      <button onClick={handleQuestion}>Answer Question</button>
-      <Response responses={response} isLoading={isLoading} />
+      <Box sx={styles.boxRoot}>
+        <Camera
+          onCapture={(imageSrc: string) => setImage(imageSrc.split(",")[1])}
+          externallyPaused={cameraPaused}
+          onResume={handleCameraResume}
+        />
+        <Card sx={styles.controlCardRoot}>
+          <Box sx={styles.questionSection}>
+            <QuestionInput onTextChange={(q: string) => setPrompt(q)} />
+            <Button onClick={handleQuestion}>Answer Question</Button>
+          </Box>
+          <Button
+            onClick={handleDescription}
+            sx={styles.descriptionButton}
+            variant="contained"
+          >
+            Describe Scene
+          </Button>
+          <Box sx={styles.responseSection}>
+            <Response responses={response} isLoading={isLoading} />
+          </Box>
+        </Card>
+      </Box>
     </div>
   );
 }
 
+const styles = {
+  boxRoot: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  controlCardRoot: {
+    width: '95%',
+    display: 'flex',
+    maxWidth: '800px',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '16px',
+    padding: '10px'
+  },
+  questionSection: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '10px',
+  },
+  descriptionButton: {
+    width: '100%',
+    backgroundColor: 'blue',
+    color: 'white',
+    padding: '10px',
+  },
+  responseSection: {
+    width: '100%',
+    marginTop: '10px',
+    border: '1px solid #e0e0e0',
+    borderRadius: '5px',
+  },
+};
+
 export default App;
+
