@@ -121,40 +121,59 @@ const Camera: React.FC<CameraProps> = ({ onCapture, externallyPaused, onResume }
 
     return (
         <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            height="100%"
+            sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                width: '100%',
+                position: 'relative',
+            }}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
-            onTouchStart={handleMouseDown} // For mobile touch
-            onTouchEnd={handleMouseUp}     // For mobile touch
+            onTouchStart={handleMouseDown}
+            onTouchEnd={handleMouseUp}
         >
             {isPaused && capturedImage ? (
-                <img src={capturedImage} alt="Captured" style={styles.webcam} />
+                <Box
+                    component="img"
+                    src={capturedImage}
+                    alt="Captured"
+                    sx={styles.img}
+                />
             ) : (
-                <Webcam screenshotFormat="image/jpeg" ref={webcamRef} style={styles.webcam} />
+                <Webcam screenshotFormat="image/jpeg" ref={webcamRef} style={{
+                    objectFit: 'contain',
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    borderRadius: '15px'
+                }} />
             )}
         </Box>
     );
+
+
 }
 
 const styles = {
-    card: {
-        maxWidth: '900px',
-        margin: '10px',
-        cursor: 'pointer' // to indicate clickable area
-    },
-    content: {
+    aspectRatioBox: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
-    webcam: {
-        //width: '100%',
-        borderRadius: '8px',
-        border: '2px solid #333',
+    img: {
+        maxWidth: '100%',
+        maxHeight: '100%',
+        borderRadius: '15px',
+        m: 1 // 8px margin all around
     }
 };
 
 export default Camera;
+
+

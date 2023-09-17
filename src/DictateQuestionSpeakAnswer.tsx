@@ -86,7 +86,8 @@ const DictateQuestionSpeakAnswer: React.FC<DictateProps> = ({ imageSrc }) => {
 
     return (
         <Button
-            variant="outlined"
+            variant="contained"
+            color="warning"
             sx={styles.button}
             onMouseDown={handlePressAndHold}
             onMouseUp={handlePressAndHold}
@@ -102,7 +103,8 @@ const styles = {
     button: {
         width: '100%',
         padding: '10px',
-        height: '100px'
+        height: '100%',
+        borderRadius: '15px'
     }
 };
 
