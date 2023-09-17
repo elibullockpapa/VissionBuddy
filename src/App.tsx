@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { MY_TOKEN } from './API_Key';
 import AppBarComponent from './AppBar';
@@ -28,7 +28,7 @@ const App: React.FC = () => {
         }
       ],
       parameters: {
-        sampleCount: 3
+        sampleCount: 1
       }
     };
     try {

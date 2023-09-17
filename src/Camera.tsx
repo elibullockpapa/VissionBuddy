@@ -2,6 +2,8 @@ import Webcam from "react-webcam";
 import React, { useEffect, useState } from 'react';
 import Card from "@mui/material/Card";
 import { Box, CardContent } from "@mui/material";
+import axios from 'axios';
+import { MY_TOKEN } from './API_Key';
 
 type CameraProps = {
     onCapture: (imageSrc: string) => void;
@@ -22,6 +24,12 @@ const Camera: React.FC<CameraProps> = ({ onCapture, externallyPaused, onResume }
         }
     }, [externallyPaused]);
 
+    useEffect(() => {
+        if (capturedImage) {
+            speakImageDescription();
+        }
+    }, [capturedImage]);
+
     const handleCapture = () => {
         if (!isPaused) {
             const imageSrc = webcamRef.current?.getScreenshot();
@@ -29,7 +37,6 @@ const Camera: React.FC<CameraProps> = ({ onCapture, externallyPaused, onResume }
                 onCapture(imageSrc);
                 setCapturedImage(imageSrc);
                 setIsPaused(true);
-                speak("camera paused");
             } else {
                 console.error("Failed to capture image");
             }
@@ -75,6 +82,42 @@ const Camera: React.FC<CameraProps> = ({ onCapture, externallyPaused, onResume }
     const speak = (message: string) => {
         const utterance = new SpeechSynthesisUtterance(message);
         speechSynthesis.speak(utterance);
+    };
+
+    const speakImageDescription = async () => {
+        if (!capturedImage) {
+            throw new Error("Image not captured yet.");
+        }
+        const bytesBase64Encoded = capturedImage.split(",")[1];
+
+        const data = {
+            instances: [
+                {
+                    image: {
+                        bytesBase64Encoded: bytesBase64Encoded
+                    }
+                }
+            ],
+            parameters: {
+                sampleCount: 1
+            }
+        };
+        try {
+            const result = await axios.post(
+                'https://us-central1-aiplatform.googleapis.com/v1/projects/imagetodescription/locations/us-central1/publishers/google/models/imagetext:predict',
+                data,
+                {
+                    headers: {
+                        "Authorization": `Bearer ` + MY_TOKEN,  // NOTE: this token expires every hour or so
+                        "Content-Type": "application/json; charset=utf-8"
+                    }
+                }
+            );
+            speak(result.data.predictions.join(', '));
+        } catch (error) {
+            speak("There was an error getting the descrption");
+            console.error("There was an error with the request", error);
+        }
     };
 
     return (
