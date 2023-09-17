@@ -1,7 +1,6 @@
 import Webcam from "react-webcam";
 import React, { useEffect, useState } from 'react';
-import Card from "@mui/material/Card";
-import { Box, CardContent } from "@mui/material";
+import { Box } from "@mui/material";
 import axios from 'axios';
 import { MY_TOKEN } from './API_Key';
 
@@ -121,26 +120,22 @@ const Camera: React.FC<CameraProps> = ({ onCapture, externallyPaused, onResume }
     };
 
     return (
-        <Card variant="outlined" sx={styles.card}>
-            <CardContent sx={styles.content}>
-                <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    height="100%"
-                    onMouseDown={handleMouseDown}
-                    onMouseUp={handleMouseUp}
-                    onTouchStart={handleMouseDown} // For mobile touch
-                    onTouchEnd={handleMouseUp}     // For mobile touch
-                >
-                    {isPaused && capturedImage ? (
-                        <img src={capturedImage} alt="Captured" style={styles.webcam} />
-                    ) : (
-                        <Webcam screenshotFormat="image/jpeg" ref={webcamRef} style={styles.webcam} />
-                    )}
-                </Box>
-            </CardContent>
-        </Card>
+        <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            height="100%"
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onTouchStart={handleMouseDown} // For mobile touch
+            onTouchEnd={handleMouseUp}     // For mobile touch
+        >
+            {isPaused && capturedImage ? (
+                <img src={capturedImage} alt="Captured" style={styles.webcam} />
+            ) : (
+                <Webcam screenshotFormat="image/jpeg" ref={webcamRef} style={styles.webcam} />
+            )}
+        </Box>
     );
 }
 
